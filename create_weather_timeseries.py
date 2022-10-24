@@ -4,11 +4,11 @@ import matplotlib.pyplot as plt
 
 matplotlib.use('TkAgg')
 
-REL_PATH_TO_DWD_CDC_WEATHER_DATA = "produkt_tu_stunde_19480101_20211231_05906.txt"
+REL_PATH_TO_DWD_CDC_WEATHER_DATA = "produkt_tu_stunde_kurz.txt"
 SEPARATOR = ";"
 TEMP_COL = "TT_TU"
 TIME_COL = "MESS_DATUM"
-UPPER_QUANTILE = 0.95
+UPPER_QUANTILE = 0.95git
 LOWER_QUANTILE = 0.05
 OUTPUT_DATA_PATH= "processed_weather_data.csv"
 OUTPUT_SEPARATOR = ","
