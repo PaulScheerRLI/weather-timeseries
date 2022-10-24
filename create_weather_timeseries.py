@@ -10,7 +10,7 @@ TEMP_COL = "TT_TU"
 TIME_COL = "MESS_DATUM"
 UPPER_QUANTILE = 0.95
 LOWER_QUANTILE = 0.05
-OUTPUT_DATA_PATH= "processed_weather_data.csv"
+OUTPUT_DATA_PATH = "processed_weather_data.csv"
 OUTPUT_SEPARATOR = ","
 
 # Find quantiles in this timespan
@@ -24,27 +24,27 @@ YEARS = [2018, 2019]
 START_TIME = 50100
 END_TIME = 63100
 
-
-
 # Read data
 df = pd.read_csv(REL_PATH_TO_DWD_CDC_WEATHER_DATA, sep=SEPARATOR)
 df = df.loc[(df[TIME_COL] > T_WINDOW[0]) & (df[TIME_COL] < T_WINDOW[1])]
 df = df.loc[df[TEMP_COL] != - 999]
 # Find quantiles
-high_quantil_temp_all_data = df[TEMP_COL].quantile(q=UPPER_QUANTILE)
-low_quantil_temp_all_data = df[TEMP_COL].quantile(q=LOWER_QUANTILE)
-print("Low Quantile: " , low_quantil_temp_all_data, "\t \t High Quantile: ", high_quantil_temp_all_data)
+high_quantile_temp_all_data = df[TEMP_COL].quantile(q=UPPER_QUANTILE)
+low_quantile_temp_all_data = df[TEMP_COL].quantile(q=LOWER_QUANTILE)
+print("Low Quantile: ", low_quantile_temp_all_data,
+      "\t \t High Quantile: ", high_quantile_temp_all_data)
 df_uncut = df.copy()
 # Cap data to quantiles
-df.loc[df[TEMP_COL] > high_quantil_temp_all_data, TEMP_COL] = high_quantil_temp_all_data
-df.loc[df[TEMP_COL] < low_quantil_temp_all_data, TEMP_COL] = low_quantil_temp_all_data
+df.loc[df[TEMP_COL] > high_quantile_temp_all_data, TEMP_COL] = high_quantile_temp_all_data
+df.loc[df[TEMP_COL] < low_quantile_temp_all_data, TEMP_COL] = low_quantile_temp_all_data
 
 df_tw = pd.DataFrame()
 df_uncut_tw = pd.DataFrame()
 for year in YEARS:
     year_start_time = year * 1e6 + START_TIME
     year_end_time = year * 1e6 + END_TIME
-    if year_end_time < year_start_time: year_end_time = year_end_time + 1e6
+    if year_end_time < year_start_time:
+        year_end_time = year_end_time + 1e6
     new_df = df.loc[(df[TIME_COL] >= year_start_time) &
                     (df[TIME_COL] < year_end_time)].copy()
     df_tw = pd.concat((df_tw, new_df))
@@ -66,9 +66,9 @@ for h in range(0, 24):
 days = []
 df_tw.reset_index(inplace=True)
 i = 0
-while i+23 < len(df_uncut_tw):
+while i + 23 < len(df_uncut_tw):
     while (abs(df_uncut_tw.iloc[i][TIME_COL]) % 100 != 0) and \
-            (abs(df_uncut_tw.iloc[i+23][TIME_COL]) % 100 != 23):
+            (abs(df_uncut_tw.iloc[i + 23][TIME_COL]) % 100 != 23):
         # Weak filter for only whole day data. has to start with 0 and end with 23
         # Special cases possible, where multiple days are seen as one. Skipped / Filtered data
         # still had an impact on above calculations of min max and median
@@ -81,10 +81,7 @@ out_df = pd.DataFrame(zip(hours, temps_low, temps_high, temps_median), index=hou
                                "Highest Temperature", "Median Temperature"]).set_index("Hour")
 out_df.round(3).to_csv(OUTPUT_DATA_PATH, sep=OUTPUT_SEPARATOR)
 df_days = pd.DataFrame(days).transpose()
-a=df_days.plot()
+a = df_days.plot()
 out_df.plot(ylim=(a.axes.get_ylim()))
 
 plt.show()
-
-
-
